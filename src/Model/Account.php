@@ -27,6 +27,10 @@ class Account extends RestApiModel
 
     private $subentryCount;
 
+    private $homeDomain;
+
+    private $flags;
+
     /**
      * @var array|AssetAmount[]
      */
@@ -62,6 +66,9 @@ class Account extends RestApiModel
         $object->sequence = $rawData['sequence'];
         $object->subentryCount = $rawData['subentry_count'];
         $object->thresholds = $rawData['thresholds'];
+        $object->homeDomain = isset($rawData['home_domain']) ? $rawData['home_domain'] : null;
+        $object->flags = isset($rawData['flags']) ? $rawData['flags'] : null;
+        $object->signers = isset($rawData['signers']) ? $rawData['signers'] : null;
         $object->data = [];
         if (isset($rawData['data'])) {
             foreach ($rawData['data'] as $key => $value) {
@@ -343,10 +350,10 @@ class Account extends RestApiModel
 
         return null;
     }
-    
+
     /**
      * Returns an array holding account thresholds.
-     * 
+     *
      * @return array
      */
     public function getThresholds()
@@ -354,6 +361,33 @@ class Account extends RestApiModel
         return $this->thresholds;
     }
 
+    /**
+     * @return string | null
+     */
+    public function getHomeDomain()
+    {
+        return $this->homeDomain;
+    }
+
+    /**
+     * @return array
+     */
+    public function getFlags()
+    {
+        return $this->flags;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSigners()
+    {
+        return $this->signers;
+    }
+
+    /**
+     * @return string
+     */
     public function getSequence()
     {
         return $this->sequence;
