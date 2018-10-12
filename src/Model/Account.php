@@ -6,6 +6,7 @@ namespace ZuluCrypto\StellarSdk\Model;
 
 use phpseclib\Math\BigInteger;
 use ZuluCrypto\StellarSdk\Horizon\Api\HorizonResponse;
+use ZuluCrypto\StellarSdk\Keypair;
 use ZuluCrypto\StellarSdk\Transaction\TransactionBuilder;
 use ZuluCrypto\StellarSdk\Util\MathSafety;
 use ZuluCrypto\StellarSdk\XdrModel\Asset;
@@ -23,6 +24,10 @@ class Account extends RestApiModel
 
     private $accountId;
 
+    /**
+     * NOTE: for the BigInteger representation of this, see $this->getSequenceAsBigInteger()
+     * @var string
+     */
     private $sequence;
 
     private $subentryCount;
@@ -91,6 +96,27 @@ class Account extends RestApiModel
         }
 
         return $object;
+    }
+
+    /**
+     * Returns true if the specified account ID (G....) passes basic validity checks
+     *
+     * Note that this doesn't necessarily mean the account is funded or exists
+     * on the network. To check that, use the Server::getAccount() method.
+     *
+     * @param $accountId
+     * @return bool
+     */
+    public static function isValidAccount($accountId)
+    {
+        // Validate that keypair passes checksum
+        try {
+            $keypair = Keypair::newFromPublicKey($accountId);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        return true;
     }
 
     public function __construct($id)
@@ -350,10 +376,10 @@ class Account extends RestApiModel
 
         return null;
     }
-
+    
     /**
      * Returns an array holding account thresholds.
-     *
+     * 
      * @return array
      */
     public function getThresholds()
@@ -385,12 +411,26 @@ class Account extends RestApiModel
         return $this->signers;
     }
 
+
     /**
+     * This returns the sequence exactly as it comes back from the Horizon API
+     *
+     * See getSequenceAsBigInteger if you need to use this value in a transaction
+     * or other 64-bit safe location.
+     *
      * @return string
      */
     public function getSequence()
     {
         return $this->sequence;
+    }
+
+    /**
+     * @return BigInteger
+     */
+    public function getSequenceAsBigInteger()
+    {
+        return new BigInteger($this->sequence);
     }
 
     /**

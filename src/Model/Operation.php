@@ -3,6 +3,8 @@
 
 namespace ZuluCrypto\StellarSdk\Model;
 
+use ZuluCrypto\StellarSdk\XdrModel\Operation\BumpSequenceOp;
+
 
 /**
  * See: https://www.stellar.org/developers/horizon/reference/resources/operation.html
@@ -20,6 +22,7 @@ class Operation extends RestApiModel
     const TYPE_ACCOUNT_MERGE        = 'account_merge';
     const TYPE_INFLATION            = 'inflation';
     const TYPE_MANAGE_DATA          = 'manage_data';
+    const TYPE_BUMP_SEQUENCE        = 'bump_sequence';
 
     /**
      * Operation ID on the Stellar network
@@ -41,6 +44,11 @@ class Operation extends RestApiModel
      * @var int
      */
     protected $typeI;
+
+    /**
+     * @var string
+     */
+    protected $transactionHash;
 
     /**
      * @param array $rawData
@@ -83,6 +91,9 @@ class Operation extends RestApiModel
             case Operation::TYPE_INFLATION:
                 $object = new InflationOperation($rawData['id'], $rawData['type']);
                 break;
+            case Operation::TYPE_BUMP_SEQUENCE:
+                $object = new BumpSequenceOp($rawData['id'], $rawData['type']);
+                break;
         }
 
         $object->loadFromRawResponseData($rawData);
@@ -114,6 +125,7 @@ class Operation extends RestApiModel
         $this->typeI = $rawData['type_i'];
 
         if (isset($rawData['paging_token'])) $this->pagingToken = $rawData['paging_token'];
+        if (isset($rawData['transaction_hash'])) $this->transactionHash = $rawData['transaction_hash'];
     }
 
     /**
@@ -162,5 +174,13 @@ class Operation extends RestApiModel
     public function setTypeI($typeI)
     {
         $this->typeI = $typeI;
+    }
+
+    /**
+     * @return string
+     */
+    public function getTransactionHash()
+    {
+        return $this->transactionHash;
     }
 }
