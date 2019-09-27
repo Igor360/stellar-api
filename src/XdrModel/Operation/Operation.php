@@ -173,6 +173,14 @@ abstract class Operation implements XdrEncodableInterface
     }
 
     /**
+     * @return int
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
      * @param AccountId $sourceAccount
      */
     public function setSourceAccount(AccountId $sourceAccount)
